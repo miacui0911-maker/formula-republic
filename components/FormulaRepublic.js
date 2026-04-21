@@ -6,6 +6,7 @@ import {
   loadPosts, savePost, deletePost as fbDeletePost, saveAllPosts,
   uploadImage,
 } from "../lib/data";
+import { uploadLargeFile, validateFile, formatFileSize } from "../lib/uploadUtils";
 
 /* ─── defaults ─── */
 const DEFAULT_SETTINGS = {
@@ -219,14 +220,32 @@ function PostsAdmin({ posts, setPosts, categories, editingPost, setEditingPost, 
   const handleImageUpload = async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
+
+    // 验证文件
+    const validation = validateFile(file, 500); // 支持最大 500MB
+    if (!validation.valid) {
+      flash(validation.error);
+      e.target.value = "";
+      return;
+    }
+
     setUploading(true);
     try {
-      const url = await uploadImage(file);
+      // 对于小文件（<32MB）使用直接上传，大文件使用分块上传
+      let url;
+      if (file.size < 32 * 1024 * 1024) {
+        url = await uploadImage(file);
+      } else {
+        url = await uploadLargeFile(file, (loaded, total) => {
+          const percent = Math.round((loaded / total) * 100);
+          flash(`Uploading... ${percent}%`);
+        });
+      }
       setForm(f => ({ ...f, imageUrl: url }));
-      flash("Image uploaded successfully");
+      flash(`✓ Image uploaded (${formatFileSize(file.size)})`);
     } catch (err) {
       console.error("Upload error:", err);
-      flash("Upload failed — check Firebase Storage is enabled");
+      flash(`Upload failed: ${err.message}`);
     }
     setUploading(false);
     e.target.value = "";
@@ -283,7 +302,7 @@ function PostsAdmin({ posts, setPosts, categories, editingPost, setEditingPost, 
             <input className="fr-input" type="date" style={{ flex: 1, minWidth: 140 }} value={form.date} onChange={e => setForm(f => ({ ...f, date: e.target.value }))} />
           </div>
           <div>
-            <label style={labelStyle}>Image</label>
+            <label style={labelStyle}>Image (supports up to 500MB 4K photos)</label>
             <div style={{ display: "flex", gap: 10, alignItems: "start" }}>
               <input className="fr-input" placeholder="Paste image URL…" value={form.imageUrl?.startsWith("data:") ? "(uploaded)" : form.imageUrl} onChange={e => setForm(f => ({ ...f, imageUrl: e.target.value }))} style={{ flex: 1 }} />
               <button className="fr-btn" onClick={() => fileRef.current?.click()} disabled={uploading} style={{ padding: "10px 16px", borderRadius: 6, background: uploading ? "#ccc" : "#eee", color: "#555", fontSize: 13, fontWeight: 500, display: "flex", alignItems: "center", gap: 6, whiteSpace: "nowrap" }}>
