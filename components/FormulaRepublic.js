@@ -4,7 +4,7 @@ import {
   loadSettings, saveSettings as fbSaveSettings,
   loadCategories, saveCategories as fbSaveCategories,
   loadPosts, savePost, deletePost as fbDeletePost, saveAllPosts,
-  uploadImage,
+  uploadImage, uploadImageWithProgress,
 } from "../lib/data";
 import { uploadLargeFile, validateFile, formatFileSize } from "../lib/uploadUtils";
 import { compressImage, getCompressionRatio } from "../lib/imageCompression";
@@ -235,30 +235,27 @@ function PostsAdmin({ posts, setPosts, categories, editingPost, setEditingPost, 
     
     try {
       // 第一步：压缩图片（保持 4K 高质量）
-      flash("Compressing image...");
+      flash("Preparing image...");
       let fileToUpload = file;
       
-      if (file.size > 5 * 1024 * 1024) { // 大于 5MB 才压缩
+      // 只有当文件大于 4MB 时才启动压缩，以节省小图片的等待时间
+      if (file.size > 4 * 1024 * 1024) {
+        flash("Compressing for lightning speed...");
         fileToUpload = await compressImage(file, (progress) => {
           flash(`Compressing... ${progress}%`);
         });
         const ratio = getCompressionRatio(originalSize, fileToUpload.size);
-        flash(`✓ Compressed ${ratio}% (${formatFileSize(originalSize)} → ${formatFileSize(fileToUpload.size)})`);
+        flash(`✓ Optimized ${ratio}% (${formatFileSize(originalSize)} → ${formatFileSize(fileToUpload.size)})`);
       }
 
-      // 第二步：上传文件
-      let url;
-      if (fileToUpload.size < 32 * 1024 * 1024) {
-        url = await uploadImage(fileToUpload);
-      } else {
-        url = await uploadLargeFile(fileToUpload, (loaded, total) => {
-          const percent = Math.round((loaded / total) * 100);
-          flash(`Uploading... ${percent}%`);
-        });
-      }
+      // 第二步：使用 Firebase 直传（Direct Upload），这是最快的上传方式
+      flash("Uploading directly to Firebase...");
+      const url = await uploadImageWithProgress(fileToUpload, (percent) => {
+        flash(`Uploading... ${percent}%`);
+      });
       
       setForm(f => ({ ...f, imageUrl: url }));
-      flash(`✓ Upload complete! (${formatFileSize(fileToUpload.size)})`);
+      flash(`✓ Success! (${formatFileSize(fileToUpload.size)})`);
     } catch (err) {
       console.error("Upload error:", err);
       flash(`Upload failed: ${err.message}`);
