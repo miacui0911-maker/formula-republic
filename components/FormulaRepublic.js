@@ -223,16 +223,13 @@ function PostsAdmin({ posts, setPosts, categories, editingPost, setEditingPost, 
     try {
       const url = await uploadImage(file);
       setForm(f => ({ ...f, imageUrl: url }));
-      flash("Image uploaded");
+      flash("Image uploaded successfully");
     } catch (err) {
-      console.error(err);
-      // fallback to data URL
-      const reader = new FileReader();
-      reader.onload = (ev) => setForm(f => ({ ...f, imageUrl: ev.target.result }));
-      reader.readAsDataURL(file);
-      flash("Image loaded locally");
+      console.error("Upload error:", err);
+      flash("Upload failed — check Firebase Storage is enabled");
     }
     setUploading(false);
+    e.target.value = "";
   };
 
   const handleSave = async () => {
