@@ -1,0 +1,201 @@
+:root {
+  --accent: #d4001a;
+  --bg: #f5f4f0;
+  --card: #ffffff;
+  --text: #111111;
+  --muted: #6b6b6b;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: "Libre Franklin", sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  overflow-x: hidden;
+}
+
+/* ─── Buttons ─── */
+.fr-btn {
+  border: none;
+  cursor: pointer;
+  font-family: "Libre Franklin", sans-serif;
+  transition: all 0.2s ease;
+}
+.fr-btn:hover {
+  opacity: 0.85;
+}
+
+/* ─── Inputs ─── */
+.fr-input {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1.5px solid #ddd;
+  border-radius: 6px;
+  font-family: "Libre Franklin", sans-serif;
+  font-size: 14px;
+  background: #fff;
+  color: var(--text);
+  transition: border-color 0.2s;
+}
+.fr-input:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.fr-textarea {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1.5px solid #ddd;
+  border-radius: 6px;
+  font-family: "Libre Franklin", sans-serif;
+  font-size: 14px;
+  min-height: 100px;
+  resize: vertical;
+  background: #fff;
+  color: var(--text);
+}
+.fr-textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+/* ─── Cards ─── */
+.fr-card {
+  cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  break-inside: avoid;
+  margin-bottom: 24px;
+}
+.fr-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1);
+}
+
+/* ─── Category pills ─── */
+.fr-cat-btn {
+  padding: 6px 18px;
+  border-radius: 100px;
+  border: 1.5px solid #ddd;
+  background: transparent;
+  cursor: pointer;
+  font-size: 13px;
+  font-family: "Libre Franklin", sans-serif;
+  font-weight: 500;
+  transition: all 0.2s;
+  color: var(--muted);
+  white-space: nowrap;
+}
+.fr-cat-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.fr-cat-btn.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+/* ─── Hero ─── */
+.fr-hero-img {
+  width: 100%;
+  height: 420px;
+  object-fit: cover;
+  border-radius: 10px;
+}
+
+/* ─── Masonry ─── */
+.fr-masonry {
+  column-count: 3;
+  column-gap: 24px;
+}
+@media (max-width: 900px) {
+  .fr-masonry {
+    column-count: 2;
+  }
+}
+@media (max-width: 600px) {
+  .fr-masonry {
+    column-count: 1;
+  }
+  .fr-hero-img {
+    height: 240px;
+  }
+}
+
+/* ─── Notification ─── */
+.fr-notif {
+  position: fixed;
+  bottom: 28px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #222;
+  color: #fff;
+  padding: 12px 28px;
+  border-radius: 100px;
+  font-family: "Libre Franklin", sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  z-index: 9999;
+  animation: slideUp 0.3s ease;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+}
+
+/* ─── Animations ─── */
+@keyframes slideUp {
+  from { opacity: 0; transform: translateX(-50%) translateY(20px); }
+  to { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+.fr-fade {
+  animation: fadeIn 0.4s ease;
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ─── Admin tabs ─── */
+.atab {
+  padding: 10px 20px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-family: "Libre Franklin", sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--muted);
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s;
+}
+.atab:hover {
+  color: var(--text);
+}
+.atab.active {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}
+
+/* ─── Color swatches ─── */
+.csw {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  border: 2px solid #ddd;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+.csw input {
+  position: absolute;
+  top: -10px;
+  left: -10px;
+  width: 56px;
+  height: 56px;
+  cursor: pointer;
+  border: none;
+  background: none;
+}
